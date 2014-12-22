@@ -106,7 +106,7 @@ function(packageId, apiTarget, callback) {
 
     // Construct path and fail if exists.
     var wd = ShellJS.pwd();
-    var path = wd + Path.sep + packageId;
+    var path = wd + Path.sep + packageId + Path.sep + "platforms" + Path.sep + "android";
     if (ShellJS.test("-e", path)) {
         errmsg = "Error: project dir '" + path + "' already exists";
         Console.error(errmsg);

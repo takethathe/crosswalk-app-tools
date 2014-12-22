@@ -23,6 +23,7 @@ function AndroidProject() {
 
     this._sdk = new AndroidSDK();
     this._channel = "stable";
+    this._platform = "android";
 
 /**
  * Fill template files and put them into the project skeleton.
