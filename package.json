@@ -1,39 +1,28 @@
 {
-  "name": "crosswalk-app-tools",
-  "version": "0.1.0",
-  "description": "An APK packager for Crosswalk -- http://crosswalk-project.org",
-  "author": "Robert Staudinger <robert.staudinger@intel.com>",
+  "name": "crosswalk-ios-app-tools",
+  "version": "0.0.1",
+  "description": "An IPA packager for Crosswalk -- http://crosswalk-project.org",
+  "author": "Xinchao He <xinchao.he@intel.com>",
   "license": "Apache V2",
   "bin": {
     "crosswalk-app": "./bin/crosswalk-app"
-  },
-  "scripts": {
-    "test": "node_modules/grunt-cli/bin/grunt test"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/crosswalk-project/crosswalk-app-tools.git"
   },
   "dependencies": {
-    "adm-zip": "~0.4.4",
-    "mktemp": "~0.3.5",
-    "mustache": "~0.8.2",
-    "shelljs": "~0.3.0"
-  },
-  "devDependencies": {
-    "grunt": "~0.4.5",
-    "grunt-contrib-jshint": "~0.10.0",
-    "grunt-contrib-nodeunit": "~0.4.1",
-    "grunt-jsdoc": "~0.4.2",
-    "grunt-release": "~0.9.0",
-    "jsdoc": "https://github.com/jsdoc3/jsdoc/archive/v3.2.2.tar.gz",
-    "nodeunit": "~0.9.0"
+    "app-parser": "~0.1.5",
+    "ipa-build": "~0.4.0",
+    "plist": "~1.1.0",
+    "shelljs": "~0.3.0",
+    "xcode": "~0.6.7"
   },
   "keywords": [
     "crosswalk",
-    "apk",
+    "ipa",
     "packaging",
-    "android"
+    "iOS"
   ],
   "bugs": {
     "url": "https://github.com/crosswalk-project/crosswalk-app-tools/issues"

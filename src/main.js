@@ -1,186 +1,36 @@
-// Copyright © 2014 Intel Corporation. All rights reserved.
-// Use  of this  source  code is  governed by  an Apache v2
-// license that can be found in the LICENSE-APACHE-V2 file.
-
-var ShellJS = require("shelljs");
-
-var AndroidProject = require("./AndroidProject");
-var CommandParser = require("./CommandParser");
-var Config = require("./Config");
-var Console = require("./Console");
-
-/**
- * Main script.
- * @namespace main
- */
-
-function workingDirectoryIsProject() {
-
-    if (ShellJS.test("-f", "AndroidManifest.xml") &&
-        ShellJS.test("-d", "xwalk_core_library")) {
-
-        return true;
-    }
-
-    return false;
-}
-
-function instantiateProject() {
-
-    var project;
-    try {
-        project = new AndroidProject();
-    } catch (e) {
-        Console.error("The Android SDK could not be found. " +
-                      "Make sure the directory containing the 'android' " +
-                      "executable is mentioned in the PATH environment variable.");
-        return null;
-    }
-
-    return project;
-}
-
-/**
- * Create skeleton project.
- * @param {String} packageId Identifier in the form of com.example.Foo
- * @param {Function} [callback] Callback returning true/false.
- * @memberOf main
- * @private
- */
-function create(packageId, callback) {
-
-    // Handle callback not passed.
-    if (!callback)
-        callback = function() {};
-
-    var project = instantiateProject();
-    if (!project) {
-        callback(false);
-        return;
-    }
-
-    project.generate(packageId, function(errormsg) {
-
-        if (errormsg) {
-            Console.error(errormsg);
-            callback(false);
-            return;
-        } else {
-            callback(true);
-            return;
-        }
-    });
-}
-
-/**
- * Build application package.
- * @param {String} type "debug" or "release".
- * @param {Function} [callback] Callback returning true/false.
- * @memberOf main
- * @private
- */
-function build(type, callback) {
-
-    // Handle callback not passed.
-    if (!callback)
-        callback = function() {};
-
-    // Check we're inside a project
-    if (!workingDirectoryIsProject()) {
-        Console.error("This does not appear to be a Crosswalk project.");
-        callback(false);
-        return;
-    }
-
-    var project = instantiateProject();
-    if (!project) {
-        callback(false);
-        return;
-    }
-
-    // Build
-    var abis = ["armeabi-v7a", "x86"];
-    var release = type === "release" ? true : false;
-    project.build(abis, release, function(errormsg) {
-
-        if (errormsg) {
-            Console.error(errormsg);
-            callback(false);
-            return;
-        } else {
-            callback(true);
-            return;
-        }
-    });
-}
-
-/**
- * Display usage information.
- * @param {CommandParser} parser.
- * @memberOf main
- * @private
- */
-function printHelp(parser) {
-
-    var buf = parser.help();
-    console.log(buf);
-}
-
-/**
- * Display version information.
- * @memberOf main
- * @private
- */
-function printVersion() {
-
-    var Package = require("../package.json");
-
-    console.log(Package.version);
-}
+var Shell = require ("shelljs");
+var Fs = require ('fs');
+var Path = require ('path');
+var iOSProject = require('./iOSProject.js');
+var CommandParser = require("./CommandParser.js");
 
 function main() {
-
     var parser = new CommandParser(process.argv);
     var cmd = parser.getCommand();
     if (cmd) {
-
-        switch (cmd) {
-        case "create":
+        switch(cmd){
+        case 'create':
+            var tool_dir = Path.join(Fs.realpathSync(Path.dirname(process.argv[1])), '..');
+            var template_dir = Path.join(tool_dir, 'data/AppShell');
             var packageId = parser.createGetPackageId();
-            create(packageId);
+            var parts = packageId.split('.');
+            var project_name = parts[parts.length-1];
+            var project_dir = Path.join(Shell.pwd(), packageId);
+            iOSProject.create(template_dir, project_dir, project_name);
             break;
-        case "update":
-            var version = parser.updateGetVersion();
-            console.log("TODO implement");
-            break;
-        case "build":
-            var type = parser.buildGetType();
-            build(type);
-            break;
-        case "help":
-            printHelp(parser);
-            break;
-        case "version":
-            printVersion();
+        case 'build':
+            var project_dir = Shell.pwd();
+            var parts = Path.basename(project_dir).split('.');
+            var project_name = parts[parts.length-1];
+            iOSProject.build(project_dir, project_name);
             break;
         default:
-            // TODO
-        }
-
+        };
     } else {
-
-        printHelp(parser);
+        console.log("Command error!");
     }
 }
 
 module.exports = {
-
-    main: main,
-
-    test: {
-        create: create,
-        build: build,
-        printHelp: printHelp,
-        printVersion: printVersion
-    }
+    'main': main,
 };
